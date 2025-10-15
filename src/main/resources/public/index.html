@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Mule Playground</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<style>
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			outline: none;
+			font-family: Arial, Helvetica, sans-serif;
+			width: 99vw;
+			height: 97vh;
+		}
+
+		#root {
+			display: flex;
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		.space {
+			height: 4px;
+			width: 100%;
+			padding: 0;
+			margin: 0;
+		}
+
+		.vContent {
+			display: block;
+			width: 33.33%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.hContent {
+			display: block;
+			height: calc(50% - 2px);
+			margin: 0;
+			padding: 0;
+		}
+
+		.content {
+			display: flex;
+			box-shadow: 2px 2px 10px 6px inset rgba(0, 0, 0, 0.1);
+			height: calc(100% - 10px);
+			width: calc(100% - 8px);
+			resize: none;
+			padding: 5px 0 5px 5px;
+			margin: 0;
+			overflow-y: scroll;
+			outline: none;
+		}
+	</style>
+	<script type="text/javascript">
+		async function evaluate() {
+			const vars = document.getElementById('vars').value;
+			const payload = document.getElementById('payload').value;
+			const expression = document.getElementById('expression').value;
+
+			const varsObj = vars ? JSON.parse(vars) : {};
+			const payloadObj = payload ? JSON.parse(payload) : null;
+
+			const payloadWrapper = {
+				vars: varsObj,
+				payload: payloadObj,
+				expression: expression
+			}
+
+			  try {
+				const response = await fetch('/evaluate', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(payloadWrapper)
+				});
+				console.log(response)
+				if (!response.ok) throw new Error('Network response was not ok');
+				const output = await response.text();
+				document.getElementById('output').value = output;
+			} catch (error) {
+				console.error('Fetch error:', error);
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			document.getElementById('vars').addEventListener('input', evaluate);
+			document.getElementById('payload').addEventListener('input', evaluate);
+			document.getElementById('expression').addEventListener('input', evaluate);
+		});
+	</script>
+</head>
+
+<body>
+	<div id="root">
+		<div class='vContent'>
+			<div class='hContent'>
+				<textarea id='vars' class='content' placeholder='VARS'></textarea>
+			</div>
+			<div class='space'></div>
+			<div class='hContent'>
+				<textarea id='payload' class='content' placeholder='PAYLOAD'></textarea>
+			</div>
+		</div>
+		<div class='vContent'>
+			<textarea id='expression' class='content' placeholder='EXPRESSION'></textarea>
+		</div>
+		<div class='vContent'>
+			<textarea id='output' class='content' placeholder='OUTPUT'></textarea>
+		</div>
+	</div>
+</body>
+
+</html>

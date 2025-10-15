@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="739b23a6-8ec6-43ca-87cc-1b613b409a11" basePath="/">
+  		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="mule-playground-uiFlow" doc:id="bc0e308e-2143-472c-ad73-cdb956fa8fd1" >
+		<http:listener doc:name="Listener" doc:id="805fffca-adfd-4c51-8288-9619e48a2b69" config-ref="HTTP_Listener_config" path="/"/>
+		<parse-template doc:name="Parse Template" doc:id="72d4433b-ec56-407a-bdf9-955417527e8d" location="public\index.html"/>
+	
+</flow>
+	<flow name="mule-playground-apiFlow" doc:id="675c7fad-81fe-4e37-b818-567601c7a514" >
+		<http:listener doc:name="Listener" doc:id="37a982ab-7a46-4cc5-8a4d-369a41dd8a3e" config-ref="HTTP_Listener_config" path="/evaluate">
+		</http:listener>
+		<foreach doc:name="For Each" doc:id="245cb60a-a0fc-4d06-a0c3-db0f946887b1" collection="#[payload.vars pluck {&#10;	varname: $$,&#10;	value: $&#10;}]">
+			<set-variable value="#[payload.value]" doc:name="Set Variable" doc:id="c3cc2440-b2d0-4861-885f-53b16f066fb7" variableName="#[payload.varname]"/>
+		</foreach>
+		<set-variable value="#[payload.expression]" doc:name="Set Variable" doc:id="d3d46b51-0b4e-405b-be7a-a08a9b6bac01" variableName="expression"/>
+		<set-payload value="#[payload.payload]" doc:name="Set Payload" doc:id="9147bbc5-0df3-4b6e-9070-aed6f9c0a9e4" />
+		<ee:dynamic-evaluate doc:name="Dynamic Evaluate" doc:id="b3ad693a-2f8f-4d88-b2f0-88ae14f98ae7" expression="#[vars.expression]"/>
+	</flow>
+</mule>

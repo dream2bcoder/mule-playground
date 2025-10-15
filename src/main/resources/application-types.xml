@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="payload" format="json">
+      <types:shape format="weave" example="examples/payload.json"><![CDATA[%dw 2.0
+
+type payload = {|
+  expression: String, 
+  payload: {|  |}, 
+  vars: {|  |}
+|} {"example": "{\\\"expression\\\":\\\"\\\",\\\"payload\\\":{},\\\"vars\\\":{}}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#37a982ab-7a46-4cc5-8a4d-369a41dd8a3e">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="payload"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
